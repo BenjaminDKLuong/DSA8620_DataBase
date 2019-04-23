@@ -1,0 +1,144 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### <span style=\"background:yellow\">Your Turn - Pyspark</span>\n",
+    "\n",
+    "Create an array of values from 0-49. Then, use the spark cluster to look at each value. If it is prime, then return 500. If it is even, then return the value minus 1. Otherwise, return original value"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "### Create RDD\n",
+    "data = range(0, 50)\n",
+    "rdd = spark_context.parallelize(data)\n",
+    "\n",
+    "\n",
+    "### Handoff for Computation\n",
+    "def is_prime(number):\n",
+    "    # prime number is always greater than 1\n",
+    "    if number > 2:\n",
+    "        for i in range(2, number):\n",
+    "            if (number % i) == 0:\n",
+    "                return False\n",
+    "        return True\n",
+    "    elif number == 2:\n",
+    "        return True\n",
+    "    else:\n",
+    "        return False\n",
+    "\n",
+    "def transform(value):\n",
+    "    if is_prime(value):\n",
+    "        return 500\n",
+    "    elif (value % 2) == 0:\n",
+    "        return value - 1\n",
+    "    else:\n",
+    "        return value\n",
+    "\n",
+    "transformed = rdd.map(transform)\n",
+    "\n",
+    "### Gather and View Results\n",
+    "results = transformed.collect()\n",
+    "\n",
+    "for orig, transformed in zip(data, results):\n",
+    "    print(\"{} --> {}\".format(int(orig), int(transformed)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### <span style=\"background:yellow\">Your Turn - SparkSQL</span> ###\n",
+    "Use SparkSQL to answer the following questions"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**How many `text`s contain the phrases \"nice\" or \"good\"?**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "query = \"SELECT COUNT(*) FROM review WHERE text LIKE '%nice%' OR text LIKE '%good%'\"\n",
+    "sqlContext.sql(query).show()\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**What is the average price of products that have a score less than 3 and a helpfulness score less than 5?**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "query = \"SELECT AVG(price) FROM review WHERE score < 3 AND helpfulness_score < 5\"\n",
+    "sqlContext.sql(query).show()\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**How many products have product IDs beginning with the letter `B`?**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "query = \"SELECT COUNT(*) FROM review WHERE Product_ID LIKE 'B%'\"\n",
+    "sqlContext.sql(query).show()\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.4.9"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
